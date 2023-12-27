@@ -3,6 +3,7 @@ package com.zettamine.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import jakarta.annotation.Resource;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -20,24 +21,15 @@ public class WelcomeServlet extends HttpServlet {
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 
-		HttpSession session = request.getSession();
-
-		if (session.getAttribute("login")!=null) {
 			out.println("<html>");
-			out.println(
-					"<body style=\"text-align:center;background:linear-gradient(to right, orange, white, green)\">");
+			out.println("<body style=\"text-align:center;background:linear-gradient(to right, orange, white, green)\">");
 			out.println("<h1 style=\"text-shadow:0 0 10px blue\">ZETTAMINE LABS PRIVATE LIMITED</h1>");
-			out.println(
-					"<img src=images/zetta.jpg width=400px style=\"box-shadow: 0px 0px 20px black; border-radius:20px\">");
+			out.println("<img src=images/zetta.jpg width=400px style=\"box-shadow: 0px 0px 20px black; border-radius:20px\">");
 			out.println("<hr>");
 			out.println("<p style=text-align:left>Hello <ins>" + request.getParameter("txt_uid") + "</ins></p>");
 			out.println("</body>");
 			out.println("</html>");
-		}else {
-			request.setAttribute("message", "please login first");
-			RequestDispatcher rd = request.getRequestDispatcher("login.html");
-			rd.forward(request, response);
-		}
+		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)

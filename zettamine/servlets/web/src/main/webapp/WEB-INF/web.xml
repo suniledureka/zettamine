@@ -12,12 +12,8 @@
   </servlet-mapping>
   <display-name>zettamine application</display-name>
   <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-    <welcome-file>index.htm</welcome-file>
-    <welcome-file>index.jsp</welcome-file>
-    <welcome-file>default.html</welcome-file>
-    <welcome-file>default.htm</welcome-file>
-    <welcome-file>default.jsp</welcome-file>
+    <welcome-file>login.html</welcome-file>
+    <welcome-file>test</welcome-file>
   </welcome-file-list>
   <servlet>
     <description></description>
@@ -38,5 +34,27 @@
   <servlet-mapping>
     <servlet-name>Form1Servlet</servlet-name>
     <url-pattern>/form1</url-pattern>
+  </servlet-mapping>
+  <filter>
+    <display-name>ZettamineFilter</display-name>
+    <filter-name>ZettamineFilter</filter-name>
+    <filter-class>com.zettamine.web.ZettamineFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>ZettamineFilter</filter-name>
+    <url-pattern>/welcome</url-pattern>
+  </filter-mapping>
+  <listener>
+    <listener-class>com.zettamine.web.CounterListener</listener-class>
+  </listener>
+  <servlet>
+    <description></description>
+    <display-name>CounterServlet</display-name>
+    <servlet-name>CounterServlet</servlet-name>
+    <servlet-class>com.zettamine.web.CounterServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CounterServlet</servlet-name>
+    <url-pattern>/visitor</url-pattern>
   </servlet-mapping>
 </web-app>
