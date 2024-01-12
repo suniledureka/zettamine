@@ -1,0 +1,6 @@
+2024-01-12 11:29:01,494 - com.zettamine.reports.ReportGenerator [generateReport] -[DEBUG] DEBUG Message 
+2024-01-12 11:29:01,497 - com.zettamine.reports.ReportGenerator [generateReport] -[INFO] INFO Message 
+2024-01-12 11:29:01,497 - com.zettamine.reports.ReportGenerator [generateReport] -[WARN] Warning Message 
+2024-01-12 11:29:01,498 - com.zettamine.reports.ReportGenerator [generateReport] -[ERROR] ERROR Message 
+2024-01-12 11:29:01,499 - com.zettamine.reports.ReportGenerator [generateReport] -[FATAL] FATAL Message 
+2024-01-12 11:29:01,500 - com.zettamine.reports.ReportGenerator [generateReport] -[TRACE] TRACE Message 

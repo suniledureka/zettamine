@@ -1,0 +1,5 @@
+12-Jan-2024 11:13:20 IST [main] DEBUG com.zettamine.reports.ReportGenerator generateReport - DEBUG Message 
+12-Jan-2024 11:13:20 IST [main] INFO com.zettamine.reports.ReportGenerator generateReport - INFO Message 
+12-Jan-2024 11:13:22 IST [main] WARN com.zettamine.reports.ReportGenerator generateReport - Warning Message 
+12-Jan-2024 11:13:22 IST [main] ERROR com.zettamine.reports.ReportGenerator generateReport - ERROR Message 
+12-Jan-2024 11:13:22 IST [main] FATAL com.zettamine.reports.ReportGenerator generateReport - FATAL Message 

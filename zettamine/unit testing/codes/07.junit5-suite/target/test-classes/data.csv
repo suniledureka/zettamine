@@ -1,6 +1,0 @@
-input, expected
-10, EVEN
-20, EVEN
-11, ODD
-17, ODD
-30, EVEN
