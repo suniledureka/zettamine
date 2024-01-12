@@ -1,0 +1,26 @@
+user story
+----------
+-> find the sum of digits from a list of String
+
+String[] input = {
+		  "1@ws2%",
+		  "AB3&%4",
+		  "42RT&*32",
+		  "80ABrt$U7" };
+
+int sumOfDigits = getDigitsSum(input);   
+  Expected Output --36
+
+String[] input = null;
+String[] input = {};
+
+project name : unit-testing-case
+Class Name : SumOfDigits
+Method Name : public int getDigitsSum(String[])  
+
+1) Business Requirements is satisfied 
+2) Coding Standarads and Best Practices are followed 
+3) Code Developed with respect to TDD 
+4) Unit Test cases implemented 
+5) Logging is implemented
+6) Code Coverage Report 
