@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    password: ''
+    url: jdbc:h2:mem:testdb
+    username: sa
+  mvc:
+    view:
+      prefix: /views/
+      suffix: .jsp
+logging:
+  file:
+    name: logs/phonebook_logs.log
+  pattern:
+    console: "%d %-5level %logger : %msg%n" 
+    #file: "%d %-5level [%thread] %logger : %msg%n"   
+    file: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"  
+  level:
+    ROOT: INFO   
+          
+phnbook:
+  messages:
+    saveSuccess: Contact Saved Successfully
+    updateSuccess: Contact Updated Successfully
+    saveFail: Contact Operation Failed
