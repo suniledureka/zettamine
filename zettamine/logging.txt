@@ -1,3 +1,0 @@
-https://howtodoinjava.com/log4j2/log4j2-rollingfileappender-example/
-
-https://mkyong.com/logging/apache-log4j-2-tutorials/
