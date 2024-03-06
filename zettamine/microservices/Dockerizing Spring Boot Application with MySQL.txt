@@ -1,0 +1,222 @@
+Dockerizing Spring Boot Application with MySQL using Docker compose
+===================================================================
+
+Practicals:
+
+1) Create a Spring Boot Application in STS
+   sb-mysql-docker
+   Dependencies: Spring Web, MySQL Driver, Spring Data JPA, Lombok
+
+srs/main.resources/application.properties
+
+# Server port
+server.port=8090
+ 
+# Datasource connection
+spring.sql.init.platform=mysql
+spring.sql.init.mode=always
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+spring.sql.init.continue-on-error=true
+
+# Hibernate
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+ 
+# Logging
+logging.level.org.springframework=ERROR
+logging.level.com.numericaideas=DEBUG
+logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+
+
+2) src/main/resources/schema.sql
+CREATE TABLE IF NOT EXISTS persons(
+    id bigint(20) NOT NULL AUTO_INCREMENT,
+    name varchar(255) DEFAULT NULL,
+    PRIMARY KEY (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+src/main/resources/data.sql
+
+INSERT  INTO persons(name) VALUES('Sanjay');
+INSERT  INTO persons(name) VALUES('Praveen');
+
+
+
+Create entity class
+
+@Entity
+@Table(name = "person")
+@Getter
+@Setter
+@ToString
+public class Person {
+	@Id
+	@Column(name = "id")
+	private Integer personId;
+	
+	@Column(name = "name")
+	private String personName;
+}
+
+
+Create Repository
+
+public interface PersonRepository extends JpaRepository<Person, Integer> {}
+
+Create Service component
+
+@Service
+@AllArgsConstructor
+public class PersonService {
+	private PersonRepository repo;
+	
+	public List<Person> getAllEntities(){
+		return repo.findAll();
+	}
+}
+
+Create Controller
+@RestController
+@AllArgsConstructor
+public class PersonRestController {
+	private PersonService personService;
+
+	@GetMapping("/all")
+	public List<Person> getAll() {
+		return personService.getAllEntities();
+	}
+
+}
+
+package the application
+cmd>mvnw clean install
+  OR
+Run As - Maven install
+
+
+
+2) Create Docker Image for Spring Boot Application - 
+create a file with name "Dockerfile" in the project folder
+
+# Use a base image with Java 17
+FROM openjdk:17
+ 
+# Copy the JAR package into the image
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} app.jar
+ 
+# Expose the application port
+EXPOSE 8090
+ 
+# Run the App
+ENTRYPOINT ["java", "-jar", "/app.jar"]
+
+
+
+3) Create docker image  [not mandatory]
+cmd> docker build .	
+
+
+4) Docker Compose Spring Boot and MySQL
+
+Docker Compose simplifies the orchestration of multi-container applications. 
+
+Create a file named "docker-compose.yml" in your project directory and add the following configuration:
+
+version: '3.7'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8090:8090
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/${MYSQL_DATABASE}?allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
+    networks:
+      - springboot-mysql-network
+  mysqldb:
+    image: mysql:8.0.33
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - springboot-mysql-network
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      retries: 10
+      interval: 3s
+      timeout: 30s
+volumes:
+  mysql-data:
+networks:
+  springboot-mysql-network:
+    name: springboot-mysql-network
+
+version: Version of Docker Compose file format.
+services: My application has two services: app (Spring Boot) and mysqldb (MySQL database image).
+build: Configuration options that are applied at build time that we defined in the Dockerfile with relative path
+image: Official Docker image from docker hub
+volumes: Named volumes that keeps our data alive after restart.
+network: The two services should be belong to one network.
+depends_on: Dependency order, mysqldb is started before app
+++Important : The data base host name should be replaced by data base service name. Ex : jdbc:mysql://mysqldb:3306/${MYSQL_DATABASE}
+
+
+5) create a file with name ".env" in the place of Dockerfile
+MYSQL_DATABASE=mydatabase
+MYSQL_PASSWORD=rootpassword
+
+
+
+This Docker Compose configuration defines two services: 
+ "app" for the Spring Boot Application and 
+ "mysqldb" for the MySQL database. 
+
+The app service builds the image based on the Dockerfile in the project's root directory. 
+
+The mysqldb service uses the official MySQL image and sets the environment variables for the database configuration. 
+
+The "depends_on" attribute ensures that the Spring Boot application starts after the MySQL database in order to guarantee dependency ordering. 
+
+Finally, the healthcheck makes sure the MySQL service is ready to accept connections before running the App.
+
+
+Spring Boot automatically assigns these variables to the related application.properties configurations listed below:
+
+    spring.datasource.url
+    spring.datasource.username
+    spring.datasource.password 
+- meaning we don't have to provide these manually into the application.properties file
+
+
+6) Run the Dockerized Application
+
+cmd> docker compose up
+
+7)
+cmd>docker ps
+
+
+
+8) to log into mysql container
+cmd> docker exec -it sb-mysql-docker-mysqldb-1 bash
+#mysql -u root -p
+password: rootpassword
+
+mysql> show databases;
+mysql> use .....
+mysql> show tables;
+
+
+Reference: https://numericaideas.com/blog/docker-compose-springboot-mysql/
