@@ -1,0 +1,16 @@
+.card{
+    width:280px;
+    background: linear-gradient(45deg, red 0 50%, blue 50% 100%);
+    margin: 20px;
+    padding:10px;
+    border-radius:15px;
+    box-shadow:0 0 10px black;
+    
+    display: inline-block;
+    color: white
+}
+.card h2{
+    color: yellow;
+    font-size:22px;
+    text-align:center;
+}
