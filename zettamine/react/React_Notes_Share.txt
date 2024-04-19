@@ -1,0 +1,342 @@
+> Multi Page web app vs Single Page web app
+
+-> In Multi Page web application, for every request new web page will be loaded at client side because of this lot of common data & common resources will be loaded multiple times at client side
+		Ex : www.axisbank.com
+
+-> In Single Page Application (SPA), common data and common resources will be loaded only once. For every request only body data will be updated.
+		Ex: angular.io / react.dev
+
+
+-> ReactJS is a popular JavaScript library that is used for building rich user interfaces.
+-> ReactJS is used to develop Single Page Applications
+-> ReactJS is developed and maintained by Facebook
+-> ReactJS is released in 2013
+-> React.js is the most popular front end library along with Angular and VueJS
+
+
+-> A ReactJS application is made up of multiple components, each component responsible for outputting a small, reusable piece of HTML code. 
+
+-> The components are the heart of all React applications. 
+
+-> ReactJS uses virtual DOM based mechanism to fill data in HTML DOM. The virtual DOM works fast as it only changes individual DOM elements instead of reloading complete DOM every time.
+
+DOM Vs VirtualDOM   - https://www.geeksforgeeks.org/difference-between-virtual-dom-and-real-dom/
+
+
+reactjs.org   https://react.dev/
+
+
+Environment Setup
+------------------
+
+-> Download & Install NodeJS
+cmd> node –v	
+cmd> node --version	
+cmd> npm --version
+cmd> npm –v		
+cmd> npx -v
+
+The npx stands for Node Package Execute 
+NPX comes with the npm, when you installed npm above 5.2.0 version then automatically npx will be installed. 
+It is an npm package runner that can execute any package that you want from the npm registry without even installing that package
+
+-> Download & Install Visual Studio Code
+
+
+Creating our First Application
+-------------------------------
+-> Create a folder as a Workspace 
+
+> npx create-react-app 01.react-app	
+
+
+-- using npx
+cmd> npx create-react-app my-app
+
+-- using npm
+cmd> npm init react-app my-app
+
+-- using yarn
+cmd> yarn create react-app my-app
+
+
+developers can develop reactjs application with Java Script or with TypeScript
+
+cmd> npx create-react-app first-app --template typescript
+
+in javascript .jsx extension & in TypeScript .tsx extension
+
+to run the application
+> cd 01.react-app		
+> npm start  
+
+to run the application in a specific port
+=> package.json (Windows):
+"scripts": {
+    "start": "set PORT=4000 && react-scripts start"
+}
+
+
+Babel - is a java script compiler (new version of java script compiler)
+Webpack - bundling your resources
+
+make some changes in App.js
+<img src={logo} .../>
+<h1>react tutorial</h1>
+-----------------------------------------------------------
+
+Folder Structure
+
+
+node_modules -- contains all dependencies required by the app. Main dependencies also listed in package.json - all our dependencies , when we work with source control we normally ignore this folder
+
+package.json -- manifest file of our project which contains the metadata. Every Node.js project has a package.json and it contains info about our project, for example list of dependencies and scripts
+
+package-lock.json -- A snapshot of the entire dependency tree. The purpose of package-lock.json is to ensure that the same dependencies are installed consistently across different environments, such as development and production environments.  It also helps to prevent issues with installing different package versions, which can lead to conflicts and errors
+
+/public - contains static assets including index.html (page template)
+
+/public/src - in simplest form it's the brain of our app. This is where we will do all of our work. 
+
+/src/index.js - is the JavaScript entry point.
+
+/public/src/index.html -- id="root" - our entire app, is the page template
+
+.gitignore - specifies which files source control (Git) should ignore
+
+README -- the markdown file where you can share more info about the project for example build instructions and summary
+
+delete "node_modules" folder
+
+
+cmd>npm install -- all the dependencies from package.json  where the list of dependencies are available
+cmd>npm start   -- will start the dev server
+
+
+cmd>npm run build -- creates the production ready code, create the production build for our application - The "build" directory containing the production build is created within the root project folder.
+
+This build/static folder contains your CSS, JS and media files.
+
+------------------------------------------------------------------------
+
+---> in the new version (from 17 ) no need to import React from 'react'
+---> sometimes "hot reloading" may not work - means if you make any changes in css file or js file - it many not gets auto refreshed in page
+google for "create react app hot reloading not working"
+
+solutions --> in root foler - create a new file with name ".env" with content 
+FAST_REFRESH=false
+
+stop server and restart it
+
+
+----------------------------------------------------------------------------
+Text Editor Setup
+
+helpful extensions for VSCode
+1) Auto Rename Tag
+2) Highlight Matching Tag - restart VSCode to get effect
+3) Prettier - Code Formatter - formats the code when we save the file
+   Settings -- search for "format" -- enable "Format on Save" & "Format on Paste"
+   Settings -- search for "default format" and set the default formatter to "Prettier- Code formatter"
+   Reload VSCode
+
+4) Emmet - just provide the HTML tag without <> - not need to type out all. No need to install it , by default it is available
+
+ h2#something.someValue
+
+  in settings.json
+ terminal.integrated.font....
+ "emmet.includeLanguages": {
+    "javascript": "javascriptreact"
+  },
+
+5) ES7 React/Redux/GraphQL/React-Native Snippets - saves us from boiler place code
+ES7 Snippets
+
+create a new file in src/Testing.js and write the 
+
+rafce tab - create react arrow function component 
+rfc tab - create functional component - regular java script function
+
+Settings - search "React Snippets" and select the first one
+
+-- we can create class compoent 
+rcc tab
+
+-- open the extension and check for all the options available
+
+Example Code Snippets
+
+imr→ 	import React from 'react'
+imrd→ 	import ReactDOM from 'react-dom'
+imrc→ 	import React, { Component } from 'react'
+imrpc→ 	import React, { PureComponent } from 'react'
+imrm→ 	import React, { memo } from 'react'
+
+https://github.com/ults-io/vscode-react-javascript-snippets/blob/HEAD/docs/Snippets.md
+
+-----------------------------------------------------------------------------
+
+Loop inside App.js
+
+<tbody>
+  {[...Array(10)].map((x, i) =>
+    <TopicCard key={i} />
+  )}
+</tbody>
+
+===================================================
+
+JSX is React's own templating language --> 99% HTML and 1% difference
+
+Differences between HTML and JSX
+
+ HTML               JSX
+1) class --->     className
+  <div class="">  <div className="">
+
+2) every tag should have a close tag for JSX
+ HTML               JSX
+ <img>
+ <input>
+
+   --- check in App.js
+    <div className="App">
+      <h2>Welcome to App Component</h2>
+      <img src="https://www.google.com/....jpg">  --- see error and then close it and check it  
+      correct code <img src="https://www.google.com/....jpg"/>
+    </div>
+
+3) every tag must and should contain an enclosing tag
+<div className="App">
+   <h2>Welcome to App Component</h2>
+</div>
+<div className="App">
+      <h2>Welcome to App Component</h2>
+</div>
+
+correct code
+a) <div>
+    <div className="App">
+      <h2>Welcome to App Component</h2>
+    </div>
+    <div className="App">
+      <h2>Welcome to App Component</h2>
+    </div>
+</div>    ---- one extra <div> is coming in DOM -- will be an issue for real application
+
+b) react approach uses empty tag
+   <>
+     <div className="App">.....     <div className="App">.....
+   </>
+
+c) import React from 'react';
+   return (
+    <React.Fragment>
+     <div className="App">.....     <div className="App">.....
+    </React.Fragment>
+
+d) import React,{Fragment} from 'react';
+    <Fragment>
+     <div className="App">.....     <div className="App">.....
+    </Fragment>
+
+
+https://react.dev/learn/writing-markup-with-jsx
+
+
+
+React.createElement
+===================
+createElement lets you create a React element. 
+It serves as an alternative to writing JSX.
+
+const element = createElement(type, props, ...children)
+
+One of the key differences between JSX and "React.createElement()" is that JSX lets you write your HTML-like code directly in your JavaScript file. On the other hand, with "React.createElement()" , you need to pass the element type, props, and children as separate arguments.
+
+
+import React from "react";
+
+function Header() {
+  return React.createElement('h1', {}, 'React/js Certification Training');
+}
+export default Header;
+-------------------------------
+import { createElement } from "react";
+
+function Header() {
+  return createElement("h1", {style: {color: "red", backgroundColor: "blue"}}, "React/js Certification Training");
+}
+export default Header;
+
+-------------------------------
+import React, { createElement } from "react";
+
+function Header() {
+  return React.createElement(
+    "div",
+    {style: {backgroundColor: "cyan"}},
+    React.createElement("h1", {}, "hello world"),
+    createElement("h2", {}, "hello earth")
+  );
+}
+export default Header;
+
+
+=====================================================
+React Props & State
+===================
+React components are controller by Props & State
+Props are used to transfer the data from one component to another
+Props are the arguments passed to the React Components
+
+-> Props are usually passes via HTML attributes to components, they are used by both class and functional components
+-> Props are used to render the data from parent component to child component. Hence flow of data in react is unidirectional
+-> Props are immutable; that means their values cannot be changed
+
+Syntax: passing Props
+ <ReactComponent property="value"/>  ---> a prop named "property" is passed to the component names "ReactComponent" with a value"value"
+
+<customTag attribute_name="value"/>	  here attribute_name is the property and value is the state
+
+
+Props with class based component ---> we can access props from the component's class using "this.props.propName"
+				 ---> "this.props" is a global object which stores all props of a component
+
+
+Props with Function based component ---> to access a prop from a function - we do not need to use the "this" keyword anymore
+		---> Function compoents accept props as parameters and can be accessed directly
+
+-- a component is a small UI can it can be a div, table etc		
+-- how a component is getting data
+
+
+
+==> in functional component - no need to use "this" - only {props.name}
+
+Props with Function based component ---> to access a prop from a function - we do not need to use the "this" keyword anymore
+	---> Function compoents accept props as parameters and can be accessed directly
+
+Functional Component with Props 
+
+
+----------------------------------------------------------------------
+States in ReactJS
+-----------------
+
+The state is a built-in React object that is used to contain data or information about the component. 
+A component's state can change over time; whenever it changes, the component re-renders.
+
+Props are used to pass data from a parent component to a child component, while state is used to manage data within a component. 
+
+Props are immutable and cannot be changed within a component, while state is mutable and can be updated using the setState function.
+
+
+State Management in Class based components
+
+-> A component can maintain its own data by themselves is known as State
+-> Data of a component is called as State
+
+
+
