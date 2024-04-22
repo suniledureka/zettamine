@@ -1,0 +1,372 @@
+Styling React Application
+=========================
+
+---- Global Level Styling ----
+
+2 default css files ---> App.css & index.css
+
+App.css is a component CSS for App component
+
+index.css is global css - we will be storing all type of styling related to components or related to elements that will be available everywhere. This is the global style sheet
+
+there are 5 main usecases for index.css =>
+1) all type of fonts that we import should be in index.css - so that every element in component can access it 
+2) all icons that we try to use in our components - like bootstrap icons, font-awesome icons etc 
+3) variables that we use like css variables - like themes, default colors that we use in our app
+4) the common pre-settings that we want to apply - like pre-settings for the font-family , pre-setting for the margin and padding
+5) element level settings
+
+
+practicals
+1) google fonts https://fonts.google.com - Poppins
+
+--inside index.css ---
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap')
+
+2) icons
+https://icons.getbootstrap.com/
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
+
+<i class="bi bi-house"></i>
+
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css");
+
+<i class="fa-solid fa-house"></i>
+
+3) variables - common settings/ value that we are going to use again and again
+:root{
+  --theme-border: #d7d7d7;
+  --theme-button: #0F3460;
+}
+
+to apply this in App.css
+border-bottom: 1px solid var(--theme-border)
+
+background-color: var(--theme-button)
+
+4) common settings
+
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+5) element level settings
+
+button{
+  padding: 5px 10px;
+  border: 0px;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: darkslateblue;
+  color: #FFFFFF;
+}
+
+a{
+  text-decoration: none;
+  color: #000000;
+}
+
+li{
+  list-style: none;
+}
+
+
+
+---- component level styling -------
+
+header
+main
+footer
+
+
+----src/components/Header.js
+
+import Logo from "../assets/logo.png"
+import "./Header.css";
+
+export const Header = () => {
+  return (
+    <header>
+        <img src={Logo} alt="" />
+        <a href="/">Home</a>
+    </header>
+  )
+}
+
+----src/components/Header.css
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 50px;
+    align-items: center;
+    max-width: 1000px;
+    margin: auto;
+    border-bottom: 1px solid var(--theme-border);
+    font-size: 18px;
+    padding: 0px 10px;
+}
+
+header img{
+    max-width: 40px;
+}
+
+
+----src/components/Footer.js
+
+import "./Footer.css";
+
+export const Footer = () => {
+  return (
+    <footer>
+        <p>2024 - TaskMate</p>
+    </footer>
+  )
+}
+
+----src/components/Footer.css
+
+footer{
+    max-width: 1000px;
+    margin: auto;
+    text-align: center;
+    padding: 20px;
+    border-top: 1px solid var(--theme-border);
+  }
+
+
+--- src/App.js
+import { Header } from "./components/Header";
+import { Footer } from "./components/Footer";
+import { TaskList } from "./components/TaskList";
+import './App.css';
+
+function App() {
+
+  return (
+    <div className="App">
+      <Header />
+      <TaskList />
+      <Footer />
+    </div>
+  );
+}
+
+export default App;
+
+
+--- src/components/TaskList.js
+
+import { useState } from 'react';
+import { TaskCard } from './TaskCard';
+import { BoxCard } from './BoxCard';
+import "./TaskList.css";
+
+export const TaskList = () => {
+    const [tasks, setTasks] = useState([
+        {id: 5271, name: "Record React Lectures", completed: true}, 
+        {id: 7825, name: "Edit React Lectures", completed: false}, 
+        {id: 8391, name: "Watch Lectures", completed: false}
+    ]);
+    const [show, setShow] = useState(true);
+
+    function handleDelete(id){
+        setTasks(tasks.filter(task => task.id !== id));
+    }
+
+  return (
+    <section className='tasklist'>
+        <h1>Task List</h1>
+        <ul>
+            <button className='trigger' onClick={() => setShow(!show)}>Toggle</button>
+            { show && tasks.map((task) => (
+                <TaskCard key={task.id} task={task} handleDelete={handleDelete} />
+            )) }
+        </ul>
+        <BoxCard result="success">
+            <p className="title">Offer Notification</p>
+            <p className="description">Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis, vel!</p>
+        </BoxCard>
+
+        <BoxCard result="warning">
+            <p className="title">Cookie Notification</p>
+            <p className="description">Lorem ipsum dolor sit amet consectetur adipisicing elit. Eligendi, suscipit.</p>
+        </BoxCard>
+    </section>
+  )
+}
+
+
+TaskList.css
+
+.tasklist h1{
+    font-size: 28px;
+    text-align: center;
+    margin: 20px;
+}
+
+.tasklist ul{
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+}
+
+.tasklist button.trigger{
+    border: 0px;
+    border-radius: 5px;
+    background-color: var(--theme-button);
+    color: #FFFFFF;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+
+021
+-----------------------------------------------------------
+
+-- Inline Level Styling ------ 022
+
+ <h1 style={{color: 'red', border: "1px solid red", padding: "10px"}}>Task List</h1>
+
+	OR
+
+   const styles = {
+        color: "#be3434",
+        border: "1px solid #be3434", 
+        borderRadius: "5px",
+        padding: "20px"
+    }
+
+
+ <h1 style={styles}>Task List</h1>
+
+
+-----------------------------------------------------------
+
+-- Dynamic Level Styling / Dynamic CSS or Dynamic className ------ 023
+
+<li className={ task.completed ? "completed" : "incomplete" }>
+
+how to apply dynamic inline styles?
+
+TaskList.js
+    const [show, setShow] = useState(true);
+
+    const styles = {
+        color: show ? "#3D8361" : "#be3434",
+        border: "2px solid", 
+        borderColor: show ? "#3D8361" : "#be3434" ,
+        borderRadius: "5px",
+        fontSize: "28px",
+        padding: "20px"
+    }
+
+<h1 style={styles}>Task List</h1>
+
+<button className='trigger' onClick={() => setShow(!show)}>{ show ? "Hide" : "Show"}</button>
+
+
+-----------------------------------------------------------
+
+-- Module Level Styling / Dynamic CSS or Dynamic className ------ 024, 025
+
+to restrict css to specific component ; by default css styles are applicable to all the components - to provide scope for the css
+
+src/components/TaskCard.module.css
+
+.title{
+    background-color: rgb(142, 189, 255);
+}
+
+#random{
+    background-color: rgb(142, 189, 255);
+}
+
+
+TaskCard.js
+import './TaskCard.css'
+import styles from './TaskCard.module.css'
+
+export const TaskCard = ({ task, handleDelete }) => {
+  return (
+    <div className="taskcard">
+      <li className={ task.completed ? "completed" : "incomplete" }>
+          <span className={styles.title}>{task.id} - {task.name}</span>
+          <button onClick={() => handleDelete(task.id)} className='delete'>Delete</button>
+      </li>
+    </div>
+  )
+}
+
+===================================================================
+Bootstrap Configuration with React JS 
+
+=> src/App.js
+import './App.css';
+import React,{Fragment} from 'react';
+function App() {
+  return (
+      <Fragment>
+        <nav className="navbar">
+          <span>Welcome to ReactJS</span>
+        </nav>
+      </Fragment>  
+  );
+}
+export default App;
+
+=> install/ integrate bootstrap
+https://getbootstrap.com > Get started > Download > npm (section)
+terminal> npm install bootstrap
+
+=> integrate font-awesome
+google for "fontawesome npm"
+terminal> npm i font-awesome  / npm install font-awesome
+
+--> when we install any package - its entry will be in package.json
+
+==> integrate Bootstrap and FontAwesome -- src/index.js
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/js/bootstrap.bundle.js';
+import 'font-awesome/css/font-awesome.css';
+
+=> integrate Google Fonts --- using Ubuntu font
+google for "Google fonts" -- search "Ubuntu" -- select 3 fortmats
+=> in src/index.css
+@import url(........)
+body{
+ margin : 0px;
+ font-family: 'Ubuntu', sans-serif !important;
+}
+.navbar{
+}
+
+=> start application --- npm start
+-- remove .navbar from index.css
+
+=> in App.js
+<button className="btn btn-success">login</button>
+<button className="btn btn-primary">register</button>
+
+.btn{
+ margin: 5px;
+}
+
+--> change navbar with Bootstrap
+<nav className="navbar navbar-dark bg-dark navbar-expand-sm">
+  <a href="/" className="navbar-brand">React with Bootstrap Styles</a>  	
+</nav>
+<i className="fa fa-user-circle fa-4x"/>
+<i className="fab fa-facebook fa-4x text-primary"/> -- integrate fontawesome cdn in index.html
+--------------------------------------------------------------------
+
+React JS with Bootstrap Cards Design
+download some images from pexels.com  and  place images in	src/assets/images
+
+=>src/components/CountryCard.jsx
+
