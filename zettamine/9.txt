@@ -1,0 +1,106 @@
+React with Server Connection & Http using Axios
+===============================================
+
+AXIOS -> is a popular HTTP library used to make connect with server and to get/post data
+google for "axios"	or we can use fetchAPI
+
+Axios is a promise-based library, so you need to implement some promise-based asynchronous HTTP requests. jQuery and AJAX also perform the same job but in React project React handles each and everything in its own virtual DOM, so there is no need to use jQuery at all.
+
+
+terminal> npm install axios
+	
+fake REST API -> for server side data - google for "JSON Placeholder"	/users   https://jsonplaceholder.typicode.com/users
+
+useEffect() Hook --> By using this Hook, you tell React that your component needs to do something after render. React will remember the function you passed (we'll refer to it as our "effect"), and call it later after performing the DOM updates.
+
+=> src/components/UserList.jsx
+
+let UserList = () => {
+  let [state, setState] = useState({
+	 users : []
+	});
+
+  useEffect(() => {
+        //promise in JS  or we can use Async & Await
+        UserService.getAllUsers().then((response) =>{
+	  //console.log(response);	
+	  //console.log(response.data);	
+	  setState(() => ({
+		users : response.data
+	  }));
+	}).catch((error) => {
+	   console.log(error);	
+	}); 
+    }, []);	
+
+  let {users} = state; //destructuring
+
+  return(
+    <React.Fragment>
+      <div className="container mt-3">
+	<div className="row">
+	 <div className="col">
+	   <p className="h3 text-success">User List</p>	
+	   <p>lorem30</p>
+	 </div>
+	</div>
+      </div>
+
+      <div className="container mt-3">
+	<div className="row">
+	 <div className="col">
+	  // <pre>{JSON.stringify(state.users)}</pre>
+	  <table className="table table-hover text-center text-striped">
+	    <thead className="bg-dark text-whte">
+	     <tr>
+		<th>SNO</th>
+		<th>NAME</th>
+		<th>EMAIL</th>
+		<th>STREET</th>
+		<th>CITY</th>
+		<th>WEBSITE</th>
+	     </tr>
+	    </thead>
+
+	    <tbody>
+	      {
+                users.length > 0 &&
+		users.map(user => {
+		 return(
+                  	 <tr key={user.id}>
+		      <td>{user.id}</td>
+		      <td>{user.name}</td>
+		      <td>{user.email}</td>
+		      <td>{user.address.street}</td>
+		      <td>{user.address.city}</td>
+		      <td>{user.website}</td>
+		   </tr>	
+		  );
+		})   
+	      }
+	    </tbody>
+	  </table>
+	 </div>
+	</div>	
+      </div>		
+    </React.Fragment>
+  );
+};
+
+export default UserList;
+
+
+=> src/services/UserService.js
+
+import axios from 'axios';
+class UserService{
+  static getAllUsers(){
+    let serverURL = 'https://jsonplaceholder.typicode.com/users';
+    return axios.get(serverURL)
+  }
+}
+export default UserService;
+
+
+
+https://www.freecodecamp.org/news/how-to-use-axios-with-react/#how-to-make-a-post-request
