@@ -1,0 +1,831 @@
+React Router
+============
+
+https://reactrouter.com/en/main
+
+React is a library - not a framework 
+
+React Router is a library 
+
+React with React Router makes a framework
+
+we can add multiple pages in react and everything is handled by components
+
+www.amazon.in
+www.amazon.in/products
+www.amazon.in/products/10001
+
+------------- Practicals (53) -----------------
+
+--new react app ---> routemap
+
+Home, Header, Footer, Contact, ProductList, ProductDetail components
+
+
+--- App.js ----
+import './App.css';
+
+function App() {
+  return (
+    <div className="App">
+      <h1>Hello World</h1>
+    </div>
+  );
+}
+
+export default App;
+
+
+-- src/components/Home.js -------
+export const Home = () => {
+  return (
+    <div>Home</div>
+  )
+}
+
+-- src/components/Header.js -------
+export const Header = () => {
+  return (
+    <div>Header</div>
+  )
+}
+
+-- src/components/Contact.js -------
+export const Contact = () => {
+  return (
+    <div>Contact</div>
+  )
+}
+
+
+-- src/components/Footer.js -------
+export const Footer = () => {
+  return (
+    <div>Footer</div>
+  )
+}
+
+-- src/components/ProductList.js -------
+
+export const ProductList = () => {
+  return (
+    <div>ProductList</div>
+  )
+}
+
+
+-- src/components/ProductDetail.js -------
+
+export const ProductDetail = () => {
+  return (
+    <div>ProductDetail</div>
+  )
+}
+
+src/assets/logo.png
+public/assets/images/placeholder.jpg
+public/assets/logo.png
+
+
+cmd>npm install react-router-dom@6
+
+=============================================================================================
+Section - 2  React Router Setup  (54)
+
+index.js
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from "react-router-dom";  // import { BrowserRouter as Router} from "react-router-dom";
+import './index.css';
+import App from './App';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <BrowserRouter>  <Router>
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
+);
+
+
+
+App.js
+
+import { Routes, Route } from "react-router-dom";
+import { Home } from "./components/Home";
+import { ProductList } from "./components/ProductList";
+import { ProductDetail } from "./components/ProductDetail";
+import { Contact } from "./components/Contact";
+
+import './App.css';
+
+function App() {
+  return (
+    <div className="App">
+ 	
+      <Routes>
+        <Route path="/" element={<Home />}></Route>
+        <Route path="products" element={<ProductList />}></Route>
+        <Route path="products/1001" element={<ProductDetail />}></Route>
+        <Route path="contact" element={<Contact />}></Route>
+      </Routes>
+
+    </div>
+  );
+}
+
+http://localhost:3000/
+export default App;
+
+
+http://localhost:3000
+http://localhost:3000/products
+http://localhost:3000/contact
+http://localhost:3000/products/1001
+
+
+function App() {
+  return (
+    <div className="App">
+      <header>HEADER</header>
+      <Routes>
+        <Route path="/" element={<Home />}></Route>
+        <Route path="products" element={<ProductList />}></Route>
+        <Route path="products/1001" element={<ProductDetail />}></Route>
+        <Route path="contact" element={<Contact />}></Route>
+      </Routes>
+      <footer>FOOTER</footer>
+    </div>
+  );
+}	
+
+
+=============================================================================================
+Section - 3  Project Structure  (56)
+
+Header.js
+
+export const Header = () => {
+  return(
+    <header>
+      <a href="/" className="logo">
+        <img src={Logo} alt="ZettaMine Logo"/>
+        <span>Routemate</a>
+      </a>
+
+      <nav className="navigation">
+	<a href="/" className="link">Home</a>
+	<a href="/products" className="link">Products</a>
+	<a href="/contact" className="link">Contact</a>
+      </nav>
+    </header>
+  );
+}
+
+
+Footer.js
+
+export const Footer = () => {
+  return (
+    <footer>
+      2024 Routemate
+    </footer>
+  )
+}
+
+-- the above one is not a single plage appplication, check in inspect - the whole page reloads
+-- reason ---> <a> tag makes a new rendering call - a new refresh call happens for the entire page 
+-- this is not component rendering - this is actually entire refresh
+
+-- alternnative to <a> tag is <Link> and <NavLink> in react
+
+App.css
+
+header {
+  display: flex;
+  justify-content: space-between;
+  height: 70px;
+  align-items: center;
+  max-width: 1200px;
+  margin: auto;
+  border-bottom: 1px solid #EEEEEE;
+  font-size: 18px;
+  padding: 0px 10px;
+}
+
+.logo{
+  display: flex;
+  align-items: center;
+}
+
+.logo img{
+  max-width: 40px;
+  margin-right: 5px;
+}
+
+.navigation .link{
+  padding: 10px;
+}
+
+.navigation .link.active{
+  background-color: #EEEEEE;
+  border-radius: 5px;
+}
+
+@media screen and (max-width: 480px) {
+  .navigation{
+      display: none;
+  }
+}
+
+
+
+
+import { Link, NavLink } from "react-router-dom";
+import Logo from "../assets/logo.png";
+
+export const Header = () => {
+  return (
+    <header>
+      <Link to="/" className="logo">
+        <img src={Logo} alt="Routemate Logo" />
+        <span>Routemate</span>
+      </Link>
+      <nav className="navigation">
+        <NavLink to="/" className="link" end>Home</NavLink>	-- try with <Link> and no end
+        <NavLink to="/products" className="link">Products</NavLink>
+        <NavLink to="/contact" className="link">Contact</NavLink>
+      </nav>
+    </header>
+  )
+}
+
+-- inspect and we can see "active" className gets added for NavLink
+-- "end" to remove the default "active" class to "Home"
+
+
+
+
+import { Link } from "react-router-dom";
+
+export const Footer = () => {
+  return (
+    <footer>
+      <Link to="/">2030 Routemate</Link>
+    </footer>
+  )
+}
+
+
+index.css
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto&display=swap');
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css");
+
+:root{
+  --box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  text-decoration: none;
+  list-style: none;
+}
+
+main {
+  min-height: 90vh;
+  max-width: 1280px;
+  margin: auto;
+  padding: 10px;
+}
+
+a{
+  text-decoration: none;
+  color: #000000;
+}
+
+button{
+  border: 0px;
+  padding: 5px 10px;
+  font-size: 16px;
+  color: #FFFFFF;
+  background-color: #1C59AE;
+  cursor: pointer;
+  border-radius: 5px;
+}
+-----------------------------
+
+function App() {
+  const user = true;
+
+  return (
+    <div className="App">
+      <Header />
+      <main>
+        <Routes>
+          <Route path="/" element={<Home />} ></Route>
+          <Route path="products" element={<ProductList />} />
+          <Route path="products/1001" element={<ProductDetail />} />
+          <Route path="contact" element={<Contact />} />          
+        </Routes>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+
+=============================================================================================
+Section -    Navigation	- 57
+
+
+https://reactrouter.com/en/main/components/navigate
+
+
+.component{
+  font-size: 22px;
+  padding: 20px 10px;
+  box-shadow: var(--box-shadow);
+  border-radius: 5px;
+  text-align: center;
+  margin: 20px 0px;
+}
+
+index.css
+
+:root{
+  --box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+
+with all components
+Contact.js
+
+<div className="component">Contact</div>  className for all components - Header, Footer, ProductList etc
+
+----------------------------------------------------------------
+
+useNavigate Hook
+
+--> The useNavigate hook returns a function that lets you navigate programmatically, for example in an effect:
+
+--- Contact.js ----
+
+import { useNavigate } from "react-router-dom";
+
+export const Contact = () => {
+  const navigate = useNavigate();
+
+  const handleSubmit = () => {
+    console.log("------");
+    navigate("/");  // when we want to return something --> return navigate("/");	// navigate("/products")
+  }
+
+  return (
+    <>
+      <div className="component">Contact</div>
+      <button onClick={handleSubmit}>Back To Home</button>
+    </>
+  )
+}
+
+
+--- working with --- <Navigate />
+
+
+App.js
+
+import { Routes, Route, Navigate } from "react-router-dom";
+
+<Route path="/admin"  element={<Navigate to="/" />} />	http://localhost:3000/admin ---> reverted back to home page
+
+--> <Navigate> is used in the Route level  and useNavigate [navigate()] is used inside  component (for component purpose)
+
+
+case 2:
+ suppose we have a user in App.js  -- if user is true - then http://localhost:3000/admin should redirect to /Admin otherwise to Home Page
+
+ const user = false;
+ 
+<Route path="admin" element={ user ? <Admin /> : <Navigate to="/" />} />
+
+
+src/components/Admin.js
+
+export const Admin = () => {
+  return (
+    <div className="component">Welcome To Admin Section</div>
+  )
+}
+
+
+
+import { Routes, Route, Navigate } from "react-router-dom";
+import { Header } from "./components/Header";
+import { Footer } from "./components/Footer";
+import { Home } from "./components/Home";
+import { ProductList } from "./components/ProductList";
+import { ProductDetail } from "./components/ProductDetail";
+import { Contact } from "./components/Contact";
+import { Admin } from "./components/Admin"
+
+import './App.css';
+
+function App() {
+  const user = true;
+
+  return (
+    <div className="App">
+      <Header />
+      <main>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="products" element={<ProductList />} />
+          <Route path="products/:id" element={<ProductDetail />} />
+          <Route path="contact" element={<Contact />} />
+          <Route path="/admin" element={ user ? <Admin /> : <Navigate to="/" />} />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+export default App;
+
+========================================================
+
+Section - Route Parameters
+
+when we are working with any type of routes - we have option to add parameters to avoid repetative stuffs 
+
+App.js
+
+<Route path="products/1001" element={<ProductDetail />} />
+  http://localhost:3000/products/1001
+  http://localhost:3000/products/1002 --- error page
+
+<Route path="products/:id" element={<ProductDetail />} />
+
+
+to get access to the parameter value in ProductDetail component - we can use "useParams" hook
+
+React JS useParams Hook helps to access the parameters of the current route to manage the dynamic routes in the URL. The react-router-dom package has useParams hooks that let you access and use the parameters of the current route as required
+
+
+ProductDetail.js
+
+import { useParams } from "react-router-dom";
+
+export const ProductDetail = () => {
+  const params = useParams();
+  console.log(params);
+
+  return (
+    <div className="component">ProductDetail</div>
+  )
+}
+
+<Route path="products/:id/:name" element={<ProductDetail />} />
+
+ http://localhost:3000/products/yetti-bluej-speaker/1001   ---> check in console
+
+
+to render the param value on component - <div className="component">ProductDetail - {params.id}</div>
+
+
+
+case 2 -- for query parameters   like http://localhost:3000/products?q=react   -- we need to use useSearchParam
+
+ProductList.js
+
+import { useSearchParams } from "react-router-dom";
+
+export const ProductList = () => {
+  const [searchParams] = useSearchParams();
+  console.log(searchParams.get("q")); 
+
+  return (
+    <div className="component">ProductList</div>
+  )
+}
+
+
+http://localhost:3000/products?keyword=react&in_stock=true&rating=5
+
+  console.log(searchParams.get("keyword"), searchParams.get("in_stock"), searchParams.get("rating"));  
+  console.log(searchParams.get("in_stock")
+
+case - 3
+-- useLocation --> basically gives information about everyting
+
+import { useSearchParams, useLocation } from "react-router-dom";
+
+export const ProductList = () => {
+  const [searchParams] = useSearchParams();
+  // console.log(searchParams.get("keyword"));
+
+  const location = useLocation();
+  console.log(location);
+
+  return (
+    <div className="component">ProductList</div>
+  )
+}
+
+ http://localhost:3000/products?keyword=react&in_stock=true&rating=5
+http://localhost:3000/products?keyword=react&in_stock=true&rating=5#top
+
+====================================================================================
+
+Section -   No Route Found   58
+
+http://localhost:3000/sssjsj  ----> 404 Not Found
+
+src/components/PageNotFound.js
+
+export const PageNotFound = () => {
+  return (
+    <div className="component">404 Opps!</div>
+  )
+}
+
+App.js
+
+ <Route path="*" element={<PageNotFound />} />
+
+http://localhost:3000/login
+
+ <Route path="admin" element={ user ? <Admin /> : <PageNotFound />} />
+
+http://localhost:3000/products/1
+http://localhost:3000/products/1/agsgsg   -- PageNotFound
+
+
+we can pass props also
+
+ <Route path="*" element={<PageNotFound title="404" />} />
+
+export const PageNotFound = ({title}) => {
+  return (
+    <div className="component">{title} Opps!</div>
+  )
+}
+
+========================================================================
+Section    Nested Routes
+
+we can nest routes
+
+import { Routes, Route, Navigate } from "react-router-dom";
+import { Header } from "./components/Header";
+import { Footer } from "./components/Footer";
+import { Home } from "./components/Home";
+import { ProductList } from "./components/ProductList";
+import { ProductDetail } from "./components/ProductDetail";
+import { Contact } from "./components/Contact";
+import { Admin } from "./components/Admin";
+import { PageNotFound } from "./components/PageNotFound";
+import { ContactIn } from "./components/ContactIn";
+import { ContactEu } from "./components/ContactEu";
+import { ContactUs } from "./components/ContactUs";
+
+import './App.css';
+
+function App() {
+  const user = true;
+
+  return (
+    <div className="App">
+      <Header />
+      <main>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="products" element={<ProductList />} />
+          <Route path="products/:id" element={<ProductDetail />} />
+          <Route path="contact" element={<Contact />} >
+          <Route path="contact/in" element={<Contact />} />
+          <Route path="contact/eu" element={<Contact />} />
+          <Route path="contact/us" element={<Contact />} />
+
+          <Route path="admin" element={ user ? <Admin /> : <Navigate to="/" />} />
+          <Route path="*" element={<PageNotFound />} />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+export default App;
+
+
+import { Routes, Route, Navigate } from "react-router-dom";
+import { Header } from "./components/Header";
+import { Footer } from "./components/Footer";
+import { Home } from "./components/Home";
+import { ProductList } from "./components/ProductList";
+import { ProductDetail } from "./components/ProductDetail";
+import { Contact } from "./components/Contact";
+import { Admin } from "./components/Admin";
+import { PageNotFound } from "./components/PageNotFound";
+import { ContactIn } from "./components/ContactIn";
+import { ContactEu } from "./components/ContactEu";
+import { ContactUs } from "./components/ContactUs";
+
+import './App.css';
+
+function App() {
+  const user = true;
+
+  return (
+    <div className="App">
+      <Header />
+      <main>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="products" element={<ProductList />} />
+          <Route path="products/:id" element={<ProductDetail />} />
+
+          <Route path="contact" element={<Contact />} >
+            <Route path="in" element={<ContactIn />} />
+            <Route path="eu" element={<ContactEu />} />
+            <Route path="us" element={<ContactUs />} />
+	    <Route path="*" element={<ContactUs />} />
+
+          </Route>
+
+          <Route path="admin" element={ user ? <Admin /> : <Navigate to="/" />} />
+          <Route path="*" element={<PageNotFound />} />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+export default App;
+
+http://localhost:3000/contact
+http://localhost:3000/contact/in
+http://localhost:3000/contact/eu
+http://localhost:3000/contact/us
+http://localhost:3000/contact/ja    http://localhost:3000/contact/japan
+
+
+export const ContactEu = () => {
+  return (
+    <div className="component">ContactEu</div>
+  )
+}
+
+
+
+export const ContactIn = () => {
+  return (
+    <div className="component">ContactIn</div>
+  )
+}
+
+
+
+export const ContactUs = () => {
+  return (
+    <div className="component">ContactUs</div>
+  )
+}
+
+
+http://localhost:3000/contact
+http://localhost:3000/contact/in  --- component wont gets integrated
+http://localhost:3000/contact/eu  --- component wont gets integrated
+http://localhost:3000/contact/us  --- component wont gets integrated
+
+to integrate it we need to import "Outlet" inside Contact.js
+
+import { useNavigate, Outlet } from "react-router-dom";
+
+export const Contact = () => {
+  const navigate = useNavigate();
+
+  const handleSubmit = () => {
+    console.log("------");
+    return navigate("/");
+  }
+
+  return (
+    <>
+      <div className="component">Contact</div>
+      <Outlet />
+      <button onClick={handleSubmit}>Submit Form</button>
+    </>
+  )
+}
+
+=====================================================================
+
+Section   Project Restructuring		60
+
+src\
+   App.js
+   App.css
+   index.css
+   index.js
+
+src\assets\
+   logo.png
+
+src\pages
+   Admin.js
+   Home.js
+   PageNotFound.js, ProductDetail.js, ProductList.js
+   
+   index.js
+
+
+src\pages\Contact
+   Contact.js
+   ContactUs.js
+   ContactEu.js
+   ContactIn.js
+
+src\routes
+   AllRoutes.js
+
+src\components
+   Header.js, Footer.js, 
+   index.js
+
+   export { Header } from './Header';
+   export { Footer } from './Footer';
+
+
+
+src/pages/index.js
+export { Home } from "./Home";
+export { Admin } from "./Admin";
+
+export { ProductList } from "./ProductList";
+export { ProductDetail } from "./ProductDetail";
+
+export { Contact } from "./contact/Contact";
+export { ContactIn } from "./contact/ContactIn";
+export { ContactUs } from "./contact/ContactUs";
+export { ContactEu } from "./contact/ContactEu";
+
+export { PageNotFound } from "./PageNotFound";
+
+
+App.js
+import './App.css';
+import { Header, Footer } from './components';
+import AllRoutes from './routes/AllRoutes';
+
+function App() {
+  const user = true;
+  //const user = false;
+
+  return (
+    <div className="App">
+      <Header />
+
+      <AllRoutes />
+
+      <Footer />
+    </div>
+  );
+}
+
+export default App;
+
+=====================================================================
+
+/*--- global configuration for CORS ----*/
+@Bean
+public WebMvcConfigurer corsConfigurer() {
+  return new WebMvcConfigurer() {
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/**")
+			.allowedMethods("*")
+			.allowedOrigins("http://localhost:3000");
+ 	}
+  };
+}
+
+2) Local Configuration
+
+@CrossOrigin --  allows requests from all origins
+@CrossOrigin(origins = "http://localhost:3000")  -- allows request from a specific origin
+
+
+
+
+
+
+
+
+ 
