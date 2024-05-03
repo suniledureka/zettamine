@@ -1,0 +1,558 @@
+Context & Reducers
+==================
+Topic :Context API & Reducer - important topic because this gives us power to explore global state management and action on it.
+
+what do you mean by global state management?
+props drilling - suppose if we are having a component tree - like 
+ App.js -> (props) -> Header.js
+	-> (props) -> AllRoutes.js
+			-> Home.js				Global State (cartList, amount, length)
+				->ProductCart.js
+			-> Cart.js
+				-> CartCart.js
+
+Components with many state updates spread across many event handlers can get overwhelming. For these cases, you can consolidate all the state update logic outside your component in a single function, called a reducer.
+
+
+useContext hook - useContext is a React Hook that lets you read and subscribe to context from your component.
+  const value = useContext(SomeContext)
+
+useReducer hook - useReducer is a React Hook that lets you add a reducer to your component.
+  const [state, dispatch] = useReducer(reducer, initialArg, init?)
+
+
+https://react.dev/reference/react/useContext
+https://react.dev/reference/react/useReducer
+https://react.dev/learn/passing-data-deeply-with-context
+https://react.dev/learn/extracting-state-logic-into-a-reducer
+
+
+useContext - Global State Management - used to save state globally so state is available globally in our application
+useReducers - Perform actions on global state - Allows us to manage complex state logic
+
+context - an API given to us by React, allowing for the passing of information to child components without the use of props
+reducer - a pure function, accepting a state & action , and returning a new state
+action - an object literal , which describes a change to state
+useContext - a react hook, allowing functional components to take advantage of the context API
+useReducer - a react hook, used in place of useState, generally for more complex state
+dispatch - a function returned to us by useReducer, which sends action objects to the reducer function
+
+
+src/context/CartContext.js
+	-> define initial state
+	-> create CartContext using createContext with initial state
+	
+	-> create cartProvider accessing the children
+	-> access state and dispatch using useReducer with cartReducer and initialState
+	-> define fucntion for each possible operation
+	-> use dispatch to execute the operation along with type and payload
+	-> return the CartContext.Provider with children and prop value - values that you want to access inside the entire application
+	-> create useCart function (-> define context using useContext(CartContext) -> return the context)
+
+
+src/reducer/cartReducer.js
+	-> create  cartReducer function with parameters as state and action
+	-> define all operations as switch statements inside the cartReducer
+
+App.js
+	-> wrap the entire App with CartProvider
+
+CartCard.js
+
+	-> access all values using useCart()
+	-> add a function to restrict 'Add to Cart' for one-time use for each product
+
+cart.js
+	-> access cart items and total using useCart()
+
+
+ProductCart.css
+.productCard .remove{
+    background-color: #ac0d14;
+}
+
+.productCard .remove:hover{
+    background-color: #8e090f;
+}
+
+=== Practicals ===
+
+shopmate
+cmd> npm install
+cmd> npm start
+
+--- create Project base structure --
+
+src/context/CartContext.js   -- -- used to create a context, define all the methods - what will happen when we click on add, remove and will pass the value to all the App components -- that means if we are having a cartList - we should be able to access it in all the components, pages (Header, footer everything)
+
+src/reducer/cartReducer.js  ---- we can mention that , if we perform "Add To Cart" - what type of value we need to return - we need to update everything - which will be in reducer
+
+---- context ---- 
+src/context/CartContext.js  
+
+//step-1 create initial state
+const initialState = {
+    cartList: [],
+    total: 0
+}	----> this is the initial state that we want when the user first visit on our website
+
+//step-2 create a Context - so that this context can be made available everywhere - any component, page etc
+import {createContext} from 'react'
+const CartContext = createContext(initialState);
+
+//step-3 create a Provider - which is going to cover any part where we can access all the value (wrap the <App/> with the provider)
+
+const CartProvider = () => {
+  return null;
+}
+
+index.js
+<CartProvider>
+  <App/>
+<CartProvider>
+
+-- now the <App/> can be accessed to the provider as a child
+export const CartProvider = ({children}) => {
+    const value = {
+	total: 0
+    };
+
+    return (
+        <CartContext.Provider value={value}>
+            {children}
+        </CartContext.Provider>
+    );
+}
+
+export const useCart = () => {
+    const context = useContext(CartContext);
+    return context;
+}   ---- this is going to be used in every component, gives all the values
+
+
+
+index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter as Router } from "react-router-dom";
+import { CartProvider } from "./context/CartContext";
+import './index.css';
+import App from './App';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <Router>
+      <CartProvider>
+        <App />
+      </CartProvider>
+    </Router>
+  </React.StrictMode>
+);
+
+
+inside src/pages/Cart.js
+
+ import { useCart } from "../context/CartContext";
+
+ const { total } = useCart();
+
+<h1>Cart Items: {products.length} / ${total}</h1>
+
+
+
+import { useCart } from "../context/CartContext";
+import { useTitle } from "../hooks/useTitle";
+import { CartCard } from "../components";
+
+export const Cart = () => {
+  const { total } = useCart();
+  useTitle("Cart");
+  
+  const products = [
+    {id: 1, "name": "Sony Wh-Ch510 Bluetooth Wireless", "price": 149, "image": "/assets/images/1001.png",}, 
+    {id: 2, "name": "boAt Rockerz 450", "price": 49, "image": "/assets/images/1002.png",}, 
+  ]
+
+  return (
+    <main>
+      <section className="cart">
+        <h1>Cart Items: {products.length} / ${total}</h1>
+        { products.map((product) => (
+          <CartCard key={product.id} product={product} />
+        )) }        
+      </section>
+    </main>
+  )
+}
+
+--- other option ---> comment export const useCart = () in CartContext.js
+	--> export const CartContext = createContext(initialState);
+	--> in Cart.js
+		import { CartContext} from "../context/CartContext"
+		const { total } = useContext(CartContext) ---> which returns the same
+
+
+--- Reducer ---- 88   --- to provide the inside working of the whole provider
+
+src/reducer/cartReducer.js
+
+export const cartReducer = (state, action) => {
+    const {type, payload} = action;
+
+    switch(type){
+
+        case "ADD_TO_CART":
+            return {...state, cartList: payload.products}
+        
+        case "REMOVE_FROM_CART":
+            return {...state, cartList: payload.products}
+
+        case "UPDATE_TOTAL":
+            return 
+
+        default:
+            throw new Error("No Case Found In cartReducer")
+    }
+}
+
+src/context/CartContext.js
+
+import { useContext, useReducer } from "react";
+import { createContext } from "react";
+import { cartReducer } from "../reducer/cartReducer";
+
+const initialState = {
+    cartList: [],
+    total: 0
+}
+
+const CartContext = createContext(initialState);
+
+export const CartProvider = ({children}) => {
+    const [state, dispatch] = useReducer(cartReducer, initialState);
+	//state - holds the current value (total, cartList) 
+        //dispatch is basically the method that we can apply on the state - dispatch is a powerful version of setState of useState hook let [counter, setCounter]] = useState(1)
+ 
+    const addToCart = (product) => {
+        const updatedCartList = state.cartList.concat(product);
+        dispatch({
+            type: "ADD_TO_CART",	-> what we need to perform
+            payload: {
+                products: updatedCartList
+            }
+        })
+    }
+
+    const removeFromCart = (product) => {
+        const updatedCartList = state.cartList.filter(current => current.id !== product.id);
+
+        dispatch({
+            type: "REMOVE_FROM_CART",
+            payload: {
+                products: updatedCartList
+            }
+        })
+    }
+
+    const value = {
+        total: state.total,
+        cartList: state.cartList,
+        addToCart,
+        removeFromCart
+    };
+
+    return (
+        <CartContext.Provider value={value}>
+            {children}
+        </CartContext.Provider>
+    );
+}
+
+export const useCart = () => {
+    const context = useContext(CartContext);
+    return context;
+}
+
+
+
+-- ProductCart.js ---
+
+import { useCart } from "../context/CartContext";
+import "./ProductCard.css";
+
+export const ProductCard = ({product}) => {
+  const { addToCart } = useCart();
+  const {name, price, image} = product;
+
+  return (
+    <div className="productCard">
+      <img src={image} alt={name} />
+      <p className="name">{name}</p>
+      <div className="action">
+        <p>${price}</p>
+        <button onClick={() => addToCart(product)}>Add To Cart</button>
+      </div>
+    </div>
+  )
+}
+
+-- CartCard.js ---
+import { useCart } from "../context/CartContext";
+import "./CartCard.css";
+
+export const CartCard = ({product}) => {
+  const { removeFromCart } = useCart();
+
+  const {name, price, image} = product;
+
+  return (
+      <div className="cartCard">
+        <img src={image} alt={name} />
+        <p className="productName">{name}</p>
+        <p className="productPrice">${price}</p>
+        <button onClick={() => removeFromCart(product)}>Remove</button>
+      </div>
+  )
+}
+
+
+---- methods ---- 89
+
+- how to get the total cost 
+
+CartContext.js
+
+    const updateTotal = (products) => {
+        let total = 0;
+        products.forEach(product => total = total + product.price);
+
+        dispatch({
+            type: "UPDATE_TOTAL",
+            payload: {
+                total
+            }
+        })
+    }
+
+
+
+CartReducer.js
+
+export const cartReducer = (state, action) => {
+    const {type, payload} = action;
+
+    switch(type){
+
+        case "ADD_TO_CART":
+            return {...state, cartList: payload.products}
+        
+        case "REMOVE_FROM_CART":
+            return {...state, cartList: payload.products}
+
+        case "UPDATE_TOTAL":
+            return {...state, total: payload.total}
+        
+        default:
+            throw new Error("No Case Found In cartReducer")
+    }
+}
+
+
+--> update_total is not being called manually
+
+CartContext.js
+
+    const addToCart = (product) => {
+        const updatedCartList = state.cartList.concat(product);
+        updateTotal(updatedCartList);	<------
+
+        dispatch({
+            type: "ADD_TO_CART",
+            payload: {
+                products: updatedCartList
+            }
+        })
+    }
+
+    const removeFromCart = (product) => {
+        const updatedCartList = state.cartList.filter(current => current.id !== product.id);
+        updateTotal(updatedCartList);	<-------
+
+        dispatch({
+            type: "REMOVE_FROM_CART",
+            payload: {
+                products: updatedCartList
+            }
+        })
+    }
+
+
+
+Cart.js
+
+import { useCart } from "../context/CartContext";
+import { useTitle } from "../hooks/useTitle";
+import { CartCard } from "../components";
+
+export const Cart = () => {
+  const { total, cartList } = useCart();
+  useTitle("Cart");
+
+  return (
+    <main>
+      <section className="cart">
+        <h1>Cart Items: {cartList.length} / ${total}</h1>
+        { cartList.map((product) => (
+          <CartCard key={product.id} product={product} />
+        )) }        
+      </section>
+    </main>
+  )
+}
+
+
+
+Header.js
+
+import { Link, NavLink } from "react-router-dom"; 
+import Logo from "../assets/logo.png"
+import { useCart } from "../context/CartContext";
+import "./Header.css";
+
+export const Header = () => {
+  const { cartList } = useCart();
+
+  return (
+    <header>
+      <Link to="/" className="logo">
+        <img src={Logo} alt="Shopmate Logo" />
+        <span>Shopping Cart</span>
+      </Link>
+      <nav className="navigation">
+        <NavLink to="/" className="link" end>Home</NavLink>
+        <NavLink to="/cart" className="link">Cart</NavLink>
+      </nav>
+      <Link to="/cart" className="items">
+        <span>Cart: {cartList.length}</span>
+      </Link>
+    </header>
+  )
+}
+
+
+ProductCard.js
+
+import { useState } from "react";
+import { useEffect } from "react";
+import { useCart } from "../context/CartContext";
+import "./ProductCard.css";
+
+export const ProductCard = ({product}) => {
+  const { cartList, addToCart, removeFromCart } = useCart();
+  const [isInCart, setIsInCart] = useState(false);
+
+  const {id, name, price, image} = product;
+
+  useEffect(() => {
+    const productIsInCart = cartList.find(cartItem => cartItem.id === id);
+
+    if(productIsInCart){
+      setIsInCart(true);
+    } else {
+      setIsInCart(false);
+    }
+
+  }, [cartList, id]);
+
+  return (
+    <div className="productCard">
+      <img src={image} alt={name} />
+      <p className="name">{name}</p>
+      <div className="action">
+        <p>${price}</p>
+        { isInCart ? (<button className="remove" onClick={() => removeFromCart(product)}>Remove</button>) :  (<button onClick={() => addToCart(product)}>Add To Cart</button>) }
+      </div>
+    </div>
+  )
+}
+
+
+--------------------
+CartContext.js
+
+import { useContext, useReducer } from "react";
+import { createContext } from "react";
+import { cartReducer } from "../reducer/cartReducer";
+
+const initialState = {
+    cartList: [],
+    total: 0
+}
+
+const CartContext = createContext(initialState);
+
+export const CartProvider = ({children}) => {
+    const [state, dispatch] = useReducer(cartReducer, initialState);
+
+    const addToCart = (product) => {
+        const updatedCartList = state.cartList.concat(product);
+        updateTotal(updatedCartList);
+
+        dispatch({
+            type: "ADD_TO_CART",
+            payload: {
+                products: updatedCartList
+            }
+        })
+    }
+
+    const removeFromCart = (product) => {
+        const updatedCartList = state.cartList.filter(current => current.id !== product.id);
+        updateTotal(updatedCartList);
+
+        dispatch({
+            type: "REMOVE_FROM_CART",
+            payload: {
+                products: updatedCartList
+            }
+        })
+    }
+
+    const updateTotal = (products) => {
+        let total = 0;
+        products.forEach(product => total = total + product.price);
+
+        dispatch({
+            type: "UPDATE_TOTAL",
+            payload: {
+                total
+            }
+        })
+    }
+
+    const value = {
+        total: state.total,
+        cartList: state.cartList,
+        addToCart,
+        removeFromCart
+    };
+
+    return (
+        <CartContext.Provider value={value}>
+            {children}
+        </CartContext.Provider>
+    );
+}
+
+export const useCart = () => {
+    const context = useContext(CartContext);
+    return context;
+}
+
+
+
+
+
+
+
