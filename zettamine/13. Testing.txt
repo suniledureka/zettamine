@@ -1,0 +1,61 @@
+Testing
+=======
+
+React Testing  Library & Jest - used in the testing of react
+
+
+Counter.js ---> Counter.test.js
+
+components/__test__
+
+cmd>npm test
+
+
+
+Counter.test.js
+
+test(name of test, callback function)
+
+test('render the text area', callback function - which contains all the testing part)
+
+3 basic things will be done in the callback function of test()
+ (a) render the component that we want to test
+ (b) try to search the element that we are trying to test
+ (c) we check the condition
+---> we have rendered, we have query, and we have condition
+
+Counter.test.js
+
+import { render } from "@testing-library/react";
+import { Counter } from "../Counter";
+
+test("render the textarea", () => {
+    console.log(render(<Counter />));
+});
+
+cmd> npm test
+
+
+import { render } from "@testing-library/react";
+import { Counter } from "../Counter";
+
+test("render the textarea", () => {
+    const { getByTestId } = render(<Counter />);
+    const textArea = getByTestId("textArea");
+    expect(textArea).toBeTruthy()  //exists or not 
+});
+
+cmd> npm start
+
+import { render } from "@testing-library/react";
+import { Counter } from "../Counter";
+
+test("render the textarea", () => {
+    const { getByPlaceholderText } = render(<Counter />);
+    const textArea = getByPlaceholderText("Type or paste your text");
+    expect(textArea).toBeTruthy();
+});
+
+
+type of queries in react testing (search varients)
+https://testing-library.com/docs/queries/about/
