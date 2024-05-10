@@ -1,7 +1,0 @@
-Sprint- 1 Login Module
-Sprint- 2 Forgot Password
-Sprint- 3 Dashboards
-Sprint- 4 Suppliers & Clients
-Spring- 5 Employee Registration
-
-slide 25
