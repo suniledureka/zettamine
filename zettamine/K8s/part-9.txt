@@ -1,0 +1,388 @@
+Challenge-1 -> How to build Microservices - Spring Boot
+Challenge-2 -> How to right size & identify service boundaries of microservices? - Domain Driven Sizing, Event Storming Sizing
+Challenge-3 -> Deployment, Portability & Scalability of Microservices - Dockerization
+Challenge-4 -> Configuration Management in Microservices - properties & profiles, external configuration
+Challenge-5 -> Service Discovery & Registration 
+Challenge-6 -> Routing, Cross Cutting Concerns in Microservices - maintain a single entry point
+Challenge-7 -> Resiliency in Microservices
+Challenge-8 -> Observability & Monitoring of Microservices
+Challenge-9 -> Microservices Security - securing microservices from unauthorized access
+Challenge-10 -> Building Event-Driven Microservices - 159
+
+Challenge- 11  Container Orchestration - 182
+
+What is orchestration?
+
+we built lot many microservices - in journey we built spring boot application, then we packages it as a docker image, and post that with the help of docker server we are converting these images into running containers- so that we can access all our microservice applications. 
+
+in our sessions we built around max of 6 or 7 microservices ; but in real production application  - we may have more than 100 microservices - more than 100 different containers running inside our production server. 
+
+whenever we have large number of containers inside our organization - we need a component that is going to take care of container orchestration - that component which is going to control our containers based upon the requirements that we have.
+
+Question-1) how we are going to automate the deployments, rollouts & rollbacks?  -- inside microservices we should try to automate as much as possible , because inside microservices we are going to deal 100s of applications; whereas in monolythic there is only one application; so automation is not mandatory where as in microservices we should automate each and every task. 
+
+
+Question-2) how are we going to make our microservices as self-healing capable? 
+that means - if one of the microservice container is not responding properly or it is responding very slowly - we need to have someone to regularly perform the health-check on running microservice containers and take an automatic decision by killing the containers which are not responding and replacing it with new containers
+
+Question-3) how are you going to make your services auto-scaling?
+scaling - whenever we are seeing the increase of the traffic that is coming towards our application - we can onboard more number of containers or more number of servers
+
+ 
+ 
+Solution: use container orchestration tool - Kubernetes
+
+
+What is Kubernetes (K8s)?   183
+
+Kubernetes is an opensource container orchestration platform that automates the deployment, scaling and management of containerized applications. It was originally developed by Google and is now maintained by the Cloud Native Computing Foundation (CNCF)
+
+Kubernetes is the most famous orchestration platform and is cloud neutral - we can have Kubernetes cluster setup inside our local system, AWS, Azure, GCP etc
+
+
+=== Kubernetes Internal Architecture === 184
+
+What is the internal structure of K8s?
+
+What are the components inside K8s that are responsible to do the magic of automated deployment, rollouts, rollbacks, scaling and many other advantages provided by the Kubernetes
+
+Whenever we are taking about Kubernetes - we are talking about a cluster.
+
+Inside cluster we will have set of servers or virtual machines which are going to work together to deliver a desired output to the end-user; very similarly inside Kubernetes cluster also we have various servers or virtual machines which are going to work together to make our microservices always running properly without any issues.  
+	
+Question) why should we go with a complex setup of Kubernetes cluster; can't we deploy all our microservices with the help of docker-compose alone?
+ whenever we are using docker-compose we are going to deploy all our containers inside a single server; but in real production application - we may have 100s of microservices - we cannot deploy all our 100s of microservices with the help of docker-compose in multi-server - instead we need to build a multi-distributed environment where we can deploy our microservices in various servers or nodes inside a cluster; on top of that docker-compose is not capable of automatic deployment, rollouts, healing etc
+
+184
+
+Usually a Kubernetes cluster will have multiple nodes
+Kubernetes cluster will have 2 type of nodes - 
+ (1) Master node - responsible for controlling and maintaining your entire Kubernetes cluster
+ (2) Worker nodes - responsible to handle the traffic that we get towards our microservices. 
+
+Inside master node - a very good component - "Kube API Server" which is going to expose some APIs using which -anyone from outside Kubernetes cluster can interact with the master node and using the same API Server only the master node and worker nodes going to communicate with each other.
+
+To interact with Kubernetes cluster 
+1) Admin UI of Kubernetes
+2) Kubectl CLI 
+
+- from the Kubectl CLI terminal we can execute some Kubectl commands and these commands will be the input to the Kube API Server; with the help of YAML configurations we can provide some informations to the Kubernetes cluster saying that I want so and so microservice to be deployed with so and so replicas , with so and so docker image etc  - all those details we can provide as an input details inside a YAML configuration to the master node with the help of Kubectl CLI terminal or Admin UI
+
+the commands that we are giving from outside the Kubernetes cluster is going to be received by the Kube API Server - once Kube API Server receives instructions through Kubectl CLI or Admin UI - it is going to read the instructions (what is the enduser is trying to do) and understand it and it is going to give that instructions to the "Scheduler" 
+
+"Scheduler" component will understand what are the requirements that is received from the Kube API Server and based upon the requirements it is going to identify- under which worker node - it has to do a deployment.
+Suppose if my enduser gave an instruction to the master node -saying that - I want to deploy my accounts microservice; in such scenario Kube API Server will give this instruction to the Scheduler - scheduler is the component that is responsible to identify under which worker node deployment of accounts microservice has to be done.
+ 
+Behind the scenes Scheduler will do lot of calculations like which worker node has bandwidth , which worker node is super busy - by considering all these calculations it is going to identify one of the worker node present inside the Kubernetes cluster.
+
+Once scheduler identifies under which worker node it has to do the accounts microservice deployment - scheduler is going to give the same instructions back to the Kube API Server and from there it will reach to the corresponding worker node about the deployment of the accounts microservice. Now assume like the accounts microservice deployment is completed inside one of the worker nodes available. 
+
+Maybe after fee hours/ days - our container may have some problems - who is going to track that? it is the responsibility of the Control Manager to always track the containers and the worker nodes available inside the cluster ; if any of the worker node or container is having some health issues - this Control Manager is going to make sure it is brining new worker nodes or new containers in the place of problematic containers or worker nodes. 
+
+In simple words, we can say Control Manager always have an input value saying that this is the decide state of my Kubernetes cluster - inside my Kubernetes cluster I always want to make sure I have 3 instances of accounts microservice is running always; so the Control Manager will always do the health check of these 3 running instances of accounts microservice  
+
+etcd - brain of Kubernetes cluster- because it is going to act as a database or a storage system  of Kubernetes cluster- inside it only all the informations related to Kubernetes cluster is going to be stored as a key-value pair
+
+Kube API Server - when it receives the instructions from the end-user will make an entry into the etcd- same values can be referred by the Control Manager     
+
+-- Worker Nodes ---
+
+1) kubelet - is an agent running inside all worker nodes - using this Kubelet- our master node is going to connect with the worker node and is going to provide the instructions with the help of Kube API Server
+
+All our microservices has to be deployed inside the worker node - our master node has to give instructions to the worker node saying that please deploy accounts microservice with a replica of 3 - all that instructions are going to be received by the Kubelet
+
+2) Container runtime - Docker server installed inside worker nodes
+
+3) Pod - is the smallest deployment unit inside the Kubernetes; Worker node is going to be a Jumbo server - we cannot deploy our container directly to the worker nodes; instead Kubernetes is going to create a pod inside a worker node and inside this pod only actual containers of the microservice are going to be deployed.
+
+What is the reason to have Pods inside Kubernetes cluster? suppose you are trying to deploy multiple microservices into a same worker node - to provide that isolation from other microservices we are using pod; inside pod only, containers will be deployed. Normally each pod may have one container only and may contain some helper container or utility containers also to perform its job.  
+
+Deploying a helper container along with the main container inside a pod is called as "Sidecar pattern". A Kubernetes side container is an additional container that runs alongside a primary application container within a Pod. The sidecar container pattern follows the principle of separating concerns and keeping individual components of an application isolated.
+
+4) Kube-proxy - used to expose the container to the outside world or to other containers inside same cluster
+
+
+===== Setup a local Kubernetes cluster using Docker Desktop ======
+
+https://docs.docker.com/desktop/kubernetes/
+
+to setup a local kubernetes cluster we have various options - we also have a installation with name "minikube" 
+
+with the help of minikube installation -we can setup small Kubernetes cluster in local system - some drawbacks with minikube installation - because few of the command that we give for the minikube will be different compared to the actual commands that we give to the Kubernetes cluster inside the production environment.
+
+we are going to configure a Kubernetes cluster using Docker Desktop which is very similar to real production server
+
+Practicals:
+
+Google for "Deploy on Kubernetes with Docker Desktop"
+
+https://docs.docker.com/desktop/kubernetes/
+> Install and turn on Kubernetes
+> Use the kubectl command
+
+cmd>kubectl config get-contexts
+
+kubectl - is a command that we need to use every time when we want to give some instructions to the Kubernetes cluster
+above command displays the list of contexts available inside our local system
+
+context is a type of isolated environment using which my client application or my CLI can interact with the Kubernetes cluster 
+
+cmd> kubectl config get-clusters
+
+cmd>kubectl config use-context docker-desktop  ---> to make the default context
+
+cmd>kubectl get nodes
+
+C:\Program Files\Docker\Docker\Resources\bin\kubectl.exe
+
+https://www.knowledgehut.com/blog/devops/install-kubernetes-on-windows#how-to-install-kubernetes-on-windows?%C2%A0%C2%A0
+
+
+
+==== Deploying the Kubernetes Dashboard UI =====
+
+as of now we are trying to interact with our Kubernetes cluster using Kubectl command from our local terminal ; we also have other approach which is "Admin UI" which is also used to interact with Kubernetes cluster 
+
+- how to setup Kubernetes Dashboard or Admin UI
+
+google "Deploy and Access the Kubernetes Dashboard"
+
+https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/
+
+1) Deploying the Dashboard UI
+
+The Dashboard UI is not deployed by default. To deploy it, do the following:
+
+Note:
+Kubernetes Dashboard supports only Helm-based installation currently as it is faster and gives us better control over all dependencies required by Dashboard to run.
+
+
+Helm is a package manager for Kubernetes - using this we can install any type of component inside Kubernetes cluster
+
+--> install helm inside our local system
+
+https://helm.sh/  > Get Started  > Installing Helm  > Through Package Managers > From Chocolatey (Windows)  - https://chocolatey.org/  - Install
+
+
+once chocolately installed using command in power shell (open power shell in Admin Mode)
+
+cmd> choco install kubernetes-helm     (command prompt in Admin Mode)
+
+cmd> helm version
+
+
+# Add kubernetes-dashboard repository
+cmd> helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+
+
+# Deploy a Helm Release named "kubernetes-dashboard" using the kubernetes-dashboard chart
+cmd>helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard
+
+-- installs Kubernetes dashboard inside our local Kubernetes Cluster
+
+
+to access Dashboard run:
+cmd>Kubectl -n Kubernetes-dashboard port-forward svc/kubernetes-dashboard-kong-proxy 8443:443
+
+-- exposing the dashboard to the outside world using the port 8443
+
+http://localhost:8443
+
+2) Accessing the Dashboard UI  - Creating a Sample User
+
+https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md
+
+-- Creating a Service Account
+Service Account - credential creating for a particular user
+
+dashboard-adminuser.yaml
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+
+
+apiVersion - we are telling to the Kubernetes cluster that we are trying to use the version v1 of API to create a Service Account
+ServiceAccount - is a pre-defined object inside Kubernetes 	
+name- name of the Service Account - very similar to user name
+namespace - where the service account has to be created ; if we are not specifying it then the ServiceAccount gets created in the default namespace
+
+cmd> kubectl apply -f dashboard-adminuser.yaml
+
+cmd>kubectl proxy  ----> if required
+
+3) Creating a ClusterRoleBinding  -- to provide privileges to the created Service Account
+
+---dashboard-rolebinding.yaml---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+
+
+- array element
+
+cmd> kubectl apply -f dashboard-rolebinding.yaml
+
+4) Getting a Bearer Token for ServiceAccount
+
+cmd> kubectl -n kubernetes-dashboard create token admin-user
+
+-n  -- namespace
+admin-user -- service account name
+
+http://localhost:8443
+
+displays the Kubernetes dashboard
+
+change the name space from "default" to "kubernetes-dashboard"
+
+left side bar > Service accounts, Cluster role-bindings, cluster roles
+
+5) Getting a long-lived Bearer Token for ServiceAccount
+
+
+===== Kubernetes YAML configurations to deploy microservice =====
+
+note: in a real project - developer is not responsible to write kubernetes configuration file - the DevOps Team members / Platform Team members are responsible to write the Kubernetes configuration files
+
+google for "creating a deployment in kubernetes"
+
+https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+ --- Creating a Deployment
+
+
+part-11/kubernetes/configserver.yml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: configserver-deployment
+  labels:
+    app: configserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: configserver
+  template:
+    metadata:
+      labels:
+        app: configserver
+    spec:
+      containers:
+      - name: configserver
+        image: zetta/configserver:s12   docker.io/zetta/configserver:s12
+        ports:
+        - containerPort: 8071
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: configserver
+spec:
+  selector:
+    app: configserver
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8071
+      targetPort: 8071
+
+---  inside a YAML indicates that it should be treated as a separte part or file 
+
+-- when ever we want to deploy our microservices to Kubernetes cluster we need to create a configuration "kind" of type "Deployment"
+
+Deployment - is a predefined object in Kubernetes
+
+replicas: 3 - Kubernetes will deploy service in 3 different pods with 3 different instances
+
+template - we are providing what is the template instructions on how we want to deploy our microservices 
+
+second part tells to expose our microservice container to the outside world - we need to create Service 
+type: LoadBalancer is exposing our application to outside world - multiple types are available
+
+
+==== Deploying Config Server into Kubernetes Cluster ========
+
+cmd> kubectl get deployments    -- shows all the deployments inside Kubernetes cluster 
+
+cmd> kubectl get services
+
+cmd> kubectl get replicaset
+
+check in dashboard "default" namespace for deployments, replicas, services
+
+-- to deploy config server with Kubernetes cluster 
+
+cmd> kubectl apply -f configserver.yml
+
+cmd> kubectl get deployments
+
+cmd> kubectl get services
+
+cmd> kubectl get replicaset
+
+cmd> kubectl get pods
+
+check in dashboard  -- default
+
+check "pods"  -- logs from top
+
+http://localhost:8071/accounts/prod
+http://localhost:8071/loans/prod
+
+
+-- Create environment variables inside kubernetes cluster using ConfigMap
+-- Preparing kubernetes manifest files for remaining microservices
+-- Deploying remaining microservices inbto kubernetes  Cluster
+-- Automatic Selfhealing inside kubernetes 
+-- Automatic Rollout & Rollback inside kubernetes  cluster
+-- Kubernetes Service Types
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+ 	
+
